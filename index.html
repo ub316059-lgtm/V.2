@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K4S - Koperasi Syariah Empat Sekawan</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#14b8a6;--primary-light:#d1fae5;--primary-soft:#ecfdf5;--secondary:#f59e0b;--danger:#dc2626;--sidebar-width:280px}
+html,body{overflow-x:hidden;width:100%}
+
+body{
+  font-family:'Segoe UI',sans-serif;
+  color:#0f172a;
+  background: linear-gradient(270deg, #ffffff, #ff0000, #ffffff);
+  background-size: 600% 600%;
+  animation: gerakMerahPutih 20s ease infinite;
+}
+@keyframes gerakMerahPutih {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+.header{
+  background:linear-gradient(135deg,var(--primary-soft) 0%,var(--primary-light) 100%);
+  color:#065f46;padding:12px 15px;text-align:center;position:relative;
+}
+.header-top{
+  display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:4px;
+}
+.menu-fab{
+  background:linear-gradient(135deg,var(--primary) 0%,#0d9488 100%);
+  color:#fff;border:2px solid #fff;
+  width:42px;height:42px;border-radius:12px;font-size:20px;
+  cursor:pointer;box-shadow:0 4px 12px rgba(20,184,166,0.5);
+  flex-shrink:0;
+}
+.header h1{font-size:18px;font-weight:900;margin:0}
+.header p{
+  font-size:12px;opacity:0.9;padding-bottom:6px;margin:0;
+  border-bottom:4px solid var(--secondary);position:relative;
+}
+.header p::after{
+  content:'';position:absolute;bottom:-4px;left:0;height:4px;width:100%;
+  background:linear-gradient(90deg, transparent, #fff, var(--secondary), #fff, transparent);
+  background-size:200% 100%;
+  animation: garisJalan 3s linear infinite;
+}
+@keyframes garisJalan {
+  0%{background-position:200% 0}
+  100%{background-position:-200% 0}
+}
+
+.sidebar{
+  width:var(--sidebar-width);background:#fff;color:#333;padding:20px;
+  transition:transform 0.3s ease;position:fixed;left:0;top:0;bottom:0;
+  overflow-y:auto;z-index:99;transform:translateX(-100%);
+  box-shadow:2px 0 10px rgba(0,0,0,0.1);
+  display:flex;flex-direction:column;
+}
+.sidebar.open{transform:translateX(0)}
+.sidebar.menu-title{
+  margin:24px 0 12px;font-size:12px;color:#666;font-weight:700;
+  text-transform:uppercase;width:100%;
+}
+.sidebar.menu-item{
+  padding:18px 12px;margin:0;border-radius:0;cursor:pointer;
+  display:block;width:100%;color:#333;text-decoration:none;font-size:14px;
+  background:#fff;border-bottom:1px solid #e2e8f0;
+}
+.sidebar.menu-item:hover,.sidebar.menu-item.active{background:#ccfbf1;color:var(--primary)}
+.sidebar.close-btn{
+  text-align:right;margin-bottom:16px;font-size:28px;cursor:pointer;
+  display:block;width:100%;background:none;border:none;
+}
+.sidebar.badge-menu{background:var(--danger);color:#fff;border-radius:10px;padding:2px 6px;font-size:10px;margin-left:6px}
+.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:98}
+.overlay.active{display:block}
+
+.container{max-width:1200px;margin:0 auto;padding:15px 8px}
+.card{
+  background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);
+  border-radius:14px;padding:12px;margin-bottom:14px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);overflow:hidden
+}
+.card h3{font-size:16px;margin:0 0 12px;color:var(--primary);font-weight:800}
+
+.grid-desktop{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:768px){.grid-desktop{grid-template-columns:repeat(2,1fr)}}
+
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:15px}
+@media(min-width:768px){.stats{grid-template-columns:repeat(3,1fr)}}
+.stat{background:linear-gradient(135deg,#ccfbf1 0%,#99f6e4 100%);padding:12px;border-radius:10px;text-align:center}
+.stat-laba{background:linear-gradient(135deg,#dcfce7 0%,#bbf7d0 100%)}
+.stat-danger{background:linear-gradient(135deg,#fee2e2 0%,#fecaca 100%)}
+.stat-value{font-size:16px;font-weight:900;color:var(--primary);margin-bottom:3px}
+.stat-laba.stat-value{color:#15803d}
+.stat-danger.stat-value{color:var(--danger)}
+.stat-label{font-size:10px;color:#475569;font-weight:600}
+.detail-row{display:flex;justify-content:space-between;gap:8px;font-size:12px;margin:6px 0;align-items:flex-start}
+.detail-row span:first-child{color:#64748b;flex:1;min-width:0;word-break:break-word}
+.detail-row span:last-child{font-weight:700;color:#0f172a;text-align:right;white-space:nowrap;flex-shrink:0}
+.masuk{color:#15803d!important}
+.keluar{color:var(--danger)!important}
+
+.page{display:none}.page.active{display:block}
+h2{color:var(--primary);margin-bottom:16px}
+table{width:100%;background:#fff;border-radius:12px;overflow:hidden;border-collapse:collapse;font-size:13px}
+th{background:var(--primary);color:#fff;padding:10px;text-align:left}
+td{padding:10px;border-bottom:1px solid #eee}
+input,select,textarea{width:100%;padding:11px;border:2px solid #cbd5e1;border-radius:10px;font-size:15px;box-sizing:border-box}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary)}
+.btn{background:linear-gradient(135deg,#16a34a 0%,#15803d 100%);color:#fff;border:none;font-weight:800;padding:14px;border-radius:10px;width:100%;font-size:15px;cursor:pointer;margin-top:12px}
+.btn-blue{background:linear-gradient(135deg,var(--primary) 0%,#0d9488 100%)}
+.btn-red{background:linear-gradient(135deg,var(--danger) 0%,#b91c1c 100%)}
+.btn-orange{background:linear-gradient(135deg,#ea580c 0%,#c2410c 100%)}
+.btn-yellow{background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%)}
+.btn-purple{background:linear-gradient(135deg,#7c3aed 0%,#6d28d9 100%)}
+.btn-small{padding:8px 12px;font-size:12px;width:auto;display:inline-block}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nasabah-item{background:#f8fafc;border:2px solid #e2e8f0;padding:12px;border-radius:10px;margin-bottom:10px;width:100%;box-sizing:border-box}
+.nasabah-item.telat{border-color:#fca5a5;background:#fef2f2}
+.nasabah-head{margin-bottom:8px}
+.nasabah-nama{font-weight:800;font-size:15px;color:var(--primary);margin-bottom:6px}
+.nasabah-info{font-size:12px;color:#64748b;line-height:1.6;word-break:break-word;margin-bottom:8px}
+.badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;margin-left:6px}
+.badge-lunas{background:#dcfce7;color:#15803d}
+.badge-aktif{background:#fef3c7;color:#92400e}
+.badge-telat{background:#fee2e2;color:var(--danger)}
+.badge-colek{background:#ddd6fe;color:#6d28d9}
+.detail-box{background:#fff;border:1px solid #e2e8f0;padding:10px;border-radius:8px;margin-top:10px}
+.action-row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.action-row-full{display:flex;gap:6px;margin-top:8px}
+.action-row-full button{flex:1}
+.hidden{display:none}
+.empty{text-align:center;padding:30px;color:#94a3b8;font-size:14px}
+.search{margin-bottom:12px}
+.info-hitung{background:#fef3c7;border:2px solid #fde68a;padding:10px;border-radius:8px;font-size:12px;margin-top:8px;color:#92400e;font-weight:600}
+.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:999;display:none;align-items:center;justify-content:center;padding:15px}
+.modal.show{display:flex}
+.modal-content{background:#fff;border-radius:14px;padding:20px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.modal-close{background:#f1f5f9;border:none;width:30px;height:30px;border-radius:50%;font-weight:900;cursor:pointer}
+.input-group{display:flex;gap:8px;align-items:end}
+.input-group input{flex:1}
+.input-group button{padding:11px 15px;margin:0;width:auto;font-size:13px}
+.riwayat-item{background:#f8fafc;border:1px solid #e2e8f0;padding:8px;border-radius:6px;margin-bottom:6px;font-size:12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.riwayat-item span:first-child{flex:1;min-width:0}
+.riwayat-item div{flex-shrink:0;display:flex;gap:4px}
+.table-wrap{overflow-x:auto}
+.jaminan-box{background:#eef2ff;border:2px solid #c7d2fe;padding:12px;border-radius:10px;margin-top:10px;display:none}
+.jaminan-box.show{display:block}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.theme-btn{width:60px;height:60px;border-radius:12px;border:3px solid white;cursor:pointer}
+
+@media print{
+  body *{visibility:hidden}
+.print-area,.print-area *{visibility:visible}
+.print-area{position:absolute;left:0;top:0;width:100%}
+.modal-header,.modal-close,.btn{display:none!important}
+}
+.kwitansi{width:100%;border:3px double #000;padding:20px;font-family:'Times New Roman',serif}
+.kwitansi h2{text-align:center;margin-bottom:4px;font-size:18px}
+.kwitansi.kop{text-align:center;font-size:12px;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:15px}
+.kwitansi.isi{font-size:14px;line-height:1.8}
+.kwitansi.ttd{margin-top:40px;display:flex;justify-content:space-between;text-align:center}
+.surat-teguran{width:100%;padding:20px;font-family:'Times New Roman',serif;font-size:12px;line-height:1.6}
+.surat-teguran.kop-surat{text-align:center;border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:20px}
+.surat-teguran.kop-surat h3{margin:0;font-size:16px}
+.surat-teguran.kop-surat p{margin:2px 0;font-size:11px}
+.surat-teguran.nomor{text-align:center;margin:15px 0;text-decoration:underline;font-weight:bold}
+.surat-teguran.isi-surat{text-align:justify}
+.surat-teguran.ttd-surat{margin-top:50px;text-align:right;margin-right:50px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <button class="menu-fab" onclick="toggleSidebar()">☰</button>
+    <h1>KOPERASI SYARIAH EMPAT SEKAWAN</h1>
+  </div>
+  <p>Jln. Pariwisata Otak Kokok, Desa Pesanggrahan</p>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="sidebar" id="sidebar">
+  <button class="close-btn" onclick="toggleSidebar()">×</button>
+  <p class="menu-title">Menu Utama</p>
+  <a class="menu-item active" onclick="showPage('dashboard')">📊 Dashboard</a>
+  <a class="menu-item" onclick="showPage('nasabah')">👥 Daftar Nasabah</a>
+  <a class="menu-item" onclick="showPage('tagih')">🔔 Tagih / Tunggakan <span class="badge-menu" id="notifTelat" style="display:none">0</span></a>
+  <p class="menu-title">Transaksi & Uang</p>
+  <a class="menu-item" onclick="showPage('tambah')">➕ Tambah Nasabah</a>
+  <a class="menu-item" onclick="showPage('modal')">💰 Modal</a>
+  <a class="menu-item" onclick="showPage('kas')">📒 Buku Kas</a>
+  <p class="menu-title">Laporan & Export</p>
+  <a class="menu-item" onclick="exportExcel()">📊 Download Laporan Excel</a>
+  <a class="menu-item" onclick="salinData()">📋 Copy Excel ke Clipboard</a>
+  <a class="menu-item" onclick="showPage('neraca')">🗂️ Neraca</a>
+  <a class="menu-item" onclick="showPage('labaRugi')">💵 Laba Rugi</a>
+  <a class="menu-item" onclick="showPage('laporanPL')">📈 Laporan Kolektor</a>
+  <a class="menu-item" onclick="showPage('jatuhTempo')">📅 Jatuh Tempo Hari Ini</a>
+  <p class="menu-title">Alat Bantu</p>
+  <a class="menu-item" onclick="backupData()">🗂️ Backup Data</a>
+  <a class="menu-item" onclick="showPage('pengaturan')">⚙️ Setting & Tema</a>
+</div>
+
+<div class="container">
+  <div id="dashboard" class="page active">
+    <div class="stats">
+      <div class="stat"><div class="stat-value" id="uangMasukHariIni">Rp 0</div><div class="stat-label">Uang Masuk Hari Ini</div></div>
+      <div class="stat stat-laba"><div class="stat-value" id="labaBersihBulan">Rp 0</div><div class="stat-label">Laba Bersih Bulan Ini</div></div>
+      <div class="stat"><div class="stat-value" id="sisaModal">Rp 0</div><div class="stat-label">Sisa Modal Nganggur</div></div>
+      <div class="stat stat-danger"><div class="stat-value" id="nplPersen">0%</div><div class="stat-label">NPL >90 Hari</div></div>
+      <div class="stat"><div class="stat-value" id="totalCair">Rp 0</div><div class="stat-label">Total Pinjaman Jalan</div></div>
+      <div class="stat stat-danger"><div class="stat-value" id="totalTelat">0</div><div class="stat-label">Nasabah Telat</div></div>
+    </div>
+    <div class="grid-desktop">
+      <div class="card">
+        <h3>📊 Ringkasan Laba Rugi Real</h3>
+        <div class="detail-row"><span>Pendapatan Bunga:</span><span id="laporanBunga" class="masuk"><b>Rp 0</b></span></div>
+        <div class="detail-row"><span>Pendapatan Denda:</span><span id="laporanDenda" class="masuk"><b>Rp 0</b></span></div>
+        <div class="detail-row"><span>Pendapatan Lain:</span><span id="laporanLain" class="masuk"><b>Rp 0</b></span></div>
+        <div class="detail-row"><span>Total Biaya Operasional:</span><span id="laporanBiaya" class="keluar"><b>Rp 0</b></span></div>
+        <hr style="margin:10px 0;border:none;border-top:2px solid #e2e8f0">
+        <div class="detail-row"><span><b>LABA BERSIH REAL:</b></span><span id="laporanLaba" class="masuk"><b>Rp 0</b></span></div>
+      </div>
+      <div class="card">
+        <h3>👥 Kinerja Petugas Lapangan</h3>
+        <div id="kinerjaPL"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="neraca" class="page hidden"><div class="card"><h3>🗂️ Neraca Koperasi</h3><div id="isiNeraca"></div><button class="btn btn-blue" onclick="window.print()">🖨️ Cetak Neraca</button></div></div>
+  <div id="labaRugi" class="page hidden"><div class="card"><h3>💵 Laporan Laba Rugi Detail</h3><div id="isiLabaRugi"></div><button class="btn btn-blue" onclick="window.print()">🖨️ Cetak Laba Rugi</button></div></div>
+  <div id="laporanPL" class="page hidden"><div class="card"><h3>📈 Laporan Kinerja Kolektor</h3><div id="isiLaporanPL"></div></div></div>
+  <div id="jatuhTempo" class="page hidden"><div class="card"><h3>📅 Nasabah Jatuh Tempo Hari Ini</h3><div id="isiJatuhTempo"></div></div></div>
+  <div id="nasabah" class="page hidden"><div class="card"><h2>Daftar Semua Nasabah</h2><input type="text" class="search" id="searchNama" placeholder="🔍 Cari nama/no KTP/no rekening/PL..." oninput="renderNasabah()"><div id="listNasabah"></div></div></div>
+  <div id="tagih" class="page hidden"><div class="card"><h3>🔔 Nasabah Telat Bayar</h3><input type="text" class="search" id="searchTelat" placeholder="🔍 Filter by nama PL..." oninput="renderTelat()"><div id="listTelat"></div></div></div>
+  <div id="modal" class="page hidden"><div class="card"><h3>💰 Riwayat Setoran Modal</h3><button class="btn btn-blue" onclick="showModalInput()">➕ Tambah Setoran Modal</button><div class="table-wrap" style="margin-top:12px"><table id="tabelModal"><thead><tr><th>Tanggal</th><th>Nama Pemodal</th><th>Kategori</th><th>Jumlah</th><th>Aksi</th></tr></thead><tbody></tbody></table></div></div></div>
+  <div id="kas" class="page hidden"><div class="card"><h3>📒 Buku Kas Harian</h3><p style="font-size:12px;color:#64748b;margin-bottom:12px">Catat uang masuk/keluar selain angsuran: gaji, bensin, listrik, pendapatan lain, dll</p><button class="btn btn-blue" onclick="showKasInput()">➕ Input Transaksi Kas</button><div class="table-wrap" style="margin-top:12px"><table id="tabelKas"><thead><tr><th>Tanggal</th><th>Kategori</th><th>Keterangan</th><th>Masuk</th><th>Keluar</th><th>Aksi</th></tr></thead><tbody></tbody></table></div></div></div>
+  <div id="tambah" class="page hidden"><div class="card"><h3 id="formJudul">➕ Data Nasabah Baru</h3><div class="grid-2"><div><label>No. Rekening *</label><input type="text" id="norek" placeholder="001.001"></div><div><label>Nama PL *</label><select id="namaPL"><option value="">-- Pilih PL --</option><option value="Lalu Imron Gozali">Lalu Imron Gozali</option><option value="Hifzan Hadi">Hifzan Hadi</option><option value="Lalu Danu Rusamsi">Lalu Danu Rusamsi</option><option value="Alfan Taruna Anugraha">Alfan Taruna Anugraha</option></select></div></div><label>Nama Lengkap *</label><input type="text" id="nama" placeholder="Ahmad Supardi"><div class="grid-2"><div><label>No. KTP *</label><input type="text" id="ktp" placeholder="5271xxxxxxxxx"></div><div><label>No. HP *</label><input type="tel" id="hp" placeholder="081234567890"></div></div><label>Alamat Lengkap *</label><input type="text" id="alamat" placeholder="Dusun Montong Gading, RT/RW"><label>Nama Pasangan</label><input type="text" id="namaPasangan" placeholder="Siti Aminah"><label>No. HP Pasangan</label><input type="tel" id="hpPasangan" placeholder="081234567891"><hr style="margin:15px 0;border:none;border-top:2px dashed #e2e8f0"><label>Setoran Pokok (Rp) *</label><input type="number" id="setoranPokok" value="50000" placeholder="50000"><label>Plapon Pinjaman (Rp) *</label><div class="input-group"><input type="number" id="plapon" value="500000" placeholder="Ketik manual" onchange="hitungTotal()"><button type="button" class="btn-blue btn-small" onclick="showPlaponList()">Pilih</button></div><select id="plaponList" style="display:none;margin-top:8px" onchange="setPlapon()"><option value="">-- Pilih Plapon Cepat --</option><option value="100000">Rp 100.000</option><option value="200000">Rp 200.000</option><option value="300000">Rp 300.000</option><option value="400000">Rp 400.000</option><option value="500000">Rp 500.000</option><option value="600000">Rp 600.000</option><option value="700000">Rp 700.000</option><option value="800000">Rp 800.000</option><option value="900000">Rp 900.000</option><option value="1000000">Rp 1.000.000</option><option value="1500000">Rp 1.500.000</option><option value="2000000">Rp 2.000.000</option></select><label>Tenor (Minggu) *</label><input type="number" id="tenor" value="12" placeholder="Ketik 1-52 minggu" min="1" max="52" onchange="hitungTotal()"><label>Tanggal Cair *</label><input type="date" id="tglCair"><div class="form-row"><div><label>Pinjaman Ke- *</label><input type="number" id="pinjamanKe" value="1" min="1"></div><div><label>Status *</label><select id="statusPinjaman"><option value="Normal">Normal</option><option value="Konpensasi">Konpensasi</option><option value="Restruktur">Restruktur</option></select></div></div><label>Jenis Anggunan *</label><select id="jenisAnggunan" onchange="toggleJaminan()"><option value="">-- Pilih Anggunan --</option><option value="BPKB">BPKB Motor/Mobil</option><option value="SHM">SHM Tanah/Rumah</option></select><div class="jaminan-box" id="boxBPKB"><label>No. BPKB *</label><input type="text" id="noBPKB" placeholder="G12345678"><div class="grid-2"><div><label>Atas Nama *</label><input type="text" id="namaBPKB" placeholder="Ahmad Supardi"></div><div><label>No. Polisi *</label><input type="text" id="nopol" placeholder="DR 1234 AB"></div></div><div class="grid-2"><div><label>Merk/Tipe</label><input type="text" id="merkMotor" placeholder="Honda Beat"></div><div><label>Tahun</label><input type="number" id="tahunMotor" placeholder="2020"></div></div></div><div class="jaminan-box" id="boxSHM"><label>No. SHM *</label><input type="text" id="noSHM" placeholder="12345"><div class="grid-2"><div><label>Atas Nama *</label><input type="text" id="namaSHM" placeholder="Ahmad Supardi"></div><div><label>Luas Tanah (m2) *</label><input type="number" id="luasTanah" placeholder="100"></div></div><label>Alamat Tanah *</label><input type="text" id="alamatTanah" placeholder="Dusun Montong Gading, RT 01/RW 02"></div><div class="info-hitung"><div class="detail-row"><span>Plapon:</span><span id="showPlapon">Rp 500.000</span></div><div class="detail-row"><span>Jasa (1.5%/minggu):</span><span id="showJasa">Rp 90.000</span></div><div class="detail-row"><span><b>Total Pelunasan:</b></span><span id="showTotal"><b>Rp 590.000</b></span></div><div class="detail-row"><span>Angsuran/Minggu:</span><span id="showAngsuran"><b>Rp 49.167</b></span></div></div><button class="btn" id="btnSimpan" onclick="simpanNasabah()">💾 Simpan Data Nasabah</button><button class="btn btn-red" id="btnBatal" onclick="batalEdit()" style="display:none;margin-top:8px">❌ Batal Edit</button></div></div>
+  <div id="pengaturan" class="page hidden"><div class="card"><h3>⚙️ Tema & Setting</h3><p style="margin-bottom:16px;">Pilih warna tema K4S Pro Max:</p><div style="display:flex;gap:16px;"><button class="theme-btn" style="background:#14b8a6" onclick="gantiTema('#14b8a6','#f59e0b')">Tosca</button><button class="theme-btn" style="background:#1e40af" onclick="gantiTema('#1e40af','#f59e0b')">Biru</button><button class="theme-btn" style="background:#dc2626" onclick="gantiTema('#dc2626','#ffffff')">Merah</button></div><p style="margin-top:16px;font-size:12px;color:#666;">Warna Primary saat ini: <span id="warnaSekarang">#14b8a6</span></p><p style="margin-top:8px;font-size:12px;color:#666;">Mode: File Lokal Anti Eror</p></div></div>
+</div>
+
+<div class="modal" id="modalSetor"><div class="modal-content"><div class="modal-header"><h3>Setor Angsuran</h3><button class="modal-close" onclick="closeModal('modalSetor')">X</button></div><div id="modalInfo"></div><label>Jumlah Setor (Rp) *</label><input type="number" id="jumlahSetor" placeholder="49167"><label>Tanggal Setor *</label><input type="date" id="tglSetor"><label>PL Yang Nagih *</label><select id="plNagih"><option value="">-- Pilih PL --</option><option value="Lalu Imron Gozali">Lalu Imron Gozali</option><option value="Hifzan Hadi">Hifzan Hadi</option><option value="Lalu Danu Rusamsi">Lalu Danu Rusamsi</option><option value="Alfan Taruna Anugraha">Alfan Taruna Anugraha</option></select><button class="btn" onclick="prosesSetor()">✅ Proses Setor</button></div></div>
+<div class="modal" id="modalInputModal"><div class="modal-content"><div class="modal-header"><h3>Input Setoran Modal</h3><button class="modal-close" onclick="closeModal('modalInputModal')">X</button></div><label>Tanggal *</label><input type="date" id="modalTgl"><label>Nama Pemodal *</label><input type="text" id="modalNama" placeholder="H. Abdullah / Kas Koperasi"><label>Kategori *</label><select id="modalKat"><option value="Setoran Modal">Setoran Modal</option><option value="Tarik Modal">Tarik Modal</option><option value="Laba Ditahan">Laba Ditahan</option></select><label>Jumlah (Rp) *</label><input type="number" id="modalJumlah" placeholder="10000000"><label>Keterangan</label><textarea id="modalKet" rows="2" placeholder="Modal awal / Tambahan modal ke-2"></textarea><button class="btn" onclick="simpanModal()">💾 Simpan</button></div></div>
+<div class="modal" id="modalInputKas"><div class="modal-content"><div class="modal-header"><h3>Input Buku Kas</h3><button class="modal-close" onclick="closeModal('modalInputKas')">X</button></div><label>Tanggal *</label><input type="date" id="kasTgl"><label>Kategori *</label><select id="kasKat"><option value="">-- Pilih Kategori --</option><option value="Gaji PL">Gaji PL</option><option value="Bensin">Bensin</option><option value="ATK">ATK</option><option value="Listrik">Listrik</option><option value="Sewa">Sewa Tempat</option><option value="Pendapatan Lain">Pendapatan Lain</option><option value="Biaya Lain">Biaya Lain</option></select><label>Keterangan *</label><input type="text" id="kasKet" placeholder="Gaji Imron bulan April / Beli pulpen"><label>Jumlah (Rp) *</label><input type="number" id="kasJumlah" placeholder="500000"><label>Jenis *</label><select id="kasJenis"><option value="keluar">Uang Keluar</option><option value="masuk">Uang Masuk</option></select><button class="btn" onclick="simpanKas()">💾 Simpan</button></div></div>
+<div class="modal" id="modalColek"><div class="modal-content"><div class="modal-header"><h3>Update Colek Nasabah</h3><button class="modal-close" onclick="closeModal('modalColek')">X</button></div><div id="colekInfo"></div><label>Colek Ke-</label><select id="colekKe"><option value="1">Colek 1 - Telepon</option><option value="2">Colek 2 - Datang ke Rumah</option><option value="3">Colek 3 - Surat Peringatan</option></select><label>Tanggal Colek *</label><input type="date" id="tglColek"><label>Catatan PL</label><textarea id="catatanColek" rows="3" placeholder="Janji bayar tanggal 20, alasan telat karena..."></textarea><button class="btn" onclick="simpanColek()">✅ Simpan Colek</button></div></div>
+
+<div class="modal" id="modalKwitansi"><div class="modal-content"><div class="modal-header"><h3>Kwitansi Setoran</h3><button class="modal-close" onclick="closeModal('modalKwitansi')">X</button></div><div class="print-area"><div id="isiKwitansi" class="kwitansi"></div></div><button class="btn btn-blue" onclick="window.print()">🖨️ Cetak Kwitansi</button></div></div>
+
+<div class="modal" id="modalTeguran"><div class="modal-content"><div class="modal-header"><h3>Surat Teguran</h3><button class="modal-close" onclick="closeModal('modalTeguran')">X</button></div><div class="print-area"><div id="isiTeguran" class="surat-teguran"></div></div><button class="btn btn-blue" onclick="window.print()">🖨️ Cetak Surat</button></div></div>
+
+<script>
+let data = JSON.parse(localStorage.getItem('koperasi_nasabah_v2')) || [];
+let transaksi = JSON.parse(localStorage.getItem('koperasi_transaksi')) || [];
+let modalData = JSON.parse(localStorage.getItem('koperasi_modal')) || [];
+let kasData = JSON.parse(localStorage.getItem('koperasi_kas')) || [];
+let editId = null, setoranId = null, colekId = null;
+let warnaPrimary = localStorage.getItem('tema_primary') || '#14b8a6';
+let warnaSecondary = localStorage.getItem('tema_secondary') || '#f59e0b';
+
+document.addEventListener('DOMContentLoaded', function(){
+  document.getElementById('tglCair').value = new Date().toISOString().split('T')[0];
+  document.getElementById('tglSetor').value = new Date().toISOString().split('T')[0];
+  document.getElementById('modalTgl').value = new Date().toISOString().split('T')[0];
+  document.getElementById('kasTgl').value = new Date().toISOString().split('T')[0];
+  document.getElementById('tglColek').value = new Date().toISOString().split('T')[0];
+  document.documentElement.style.setProperty('--primary', warnaPrimary);
+  document.documentElement.style.setProperty('--secondary', warnaSecondary);
+  document.getElementById('warnaSekarang').textContent = warnaPrimary;
+  hitungTotal();
+  renderAll();
+});
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('active');
+}
+
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p=>{p.classList.add('hidden');p.classList.remove('active')});
+  document.getElementById(page).classList.remove('hidden');
+  document.getElementById(page).classList.add('active');
+  document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));
+  if(event&&event.target) event.target.classList.add('active');
+  toggleSidebar();
+  if(page==='dashboard') renderDashboard();
+  if(page==='nasabah') renderNasabah();
+  if(page==='tagih') renderTelat();
+  if(page==='modal') renderModal();
+  if(page==='kas') renderKas();
+  if(page==='neraca') renderNeraca();
+  if(page==='labaRugi') renderLabaRugi();
+  if(page==='laporanPL') renderLaporanPL();
+  if(page==='jatuhTempo') renderJatuhTempo();
+}
+
+function gantiTema(primary, secondary){
+  warnaPrimary = primary;
+  warnaSecondary = secondary;
+  localStorage.setItem('tema_primary', primary);
+  localStorage.setItem('tema_secondary', secondary);
+  document.documentElement.style.setProperty('--primary', primary);
+  document.documentElement.style.setProperty('--secondary', secondary);
+  document.getElementById('warnaSekarang').textContent = primary;
+  alert('✅ Tema berhasil diganti!');
+}
+
+function hitungBunga(plapon, tenor){
+  const bunga = Math.round(plapon * 0.015 * tenor);
+  const total = plapon + bunga;
+  const angsuran = Math.round(total / tenor);
+  return {bunga, total, angsuran};
+}
+
+function hitungTotal(){
+  const plapon = parseInt(document.getElementById('plapon').value) || 0;
+  const tenor = parseInt(document.getElementById('tenor').value) || 12;
+  const h = hitungBunga(plapon, tenor);
+  document.getElementById('showPlapon').textContent = 'Rp ' + plapon.toLocaleString('id-ID');
+  document.getElementById('showJasa').textContent = 'Rp ' + h.bunga.toLocaleString('id-ID');
+  document.getElementById('showTotal').innerHTML = '<b>Rp ' + h.total.toLocaleString('id-ID') + '</b>';
+  document.getElementById('showAngsuran').innerHTML = '<b>Rp ' + h.angsuran.toLocaleString('id-ID') + '</b>';
+}
+
+function showPlaponList(){ document.getElementById('plaponList').style.display='block'; }
+function setPlapon(){
+  const val = document.getElementById('plaponList').value;
+  if(val){ document.getElementById('plapon').value = val; hitungTotal(); }
+}
+
+function toggleJaminan(){
+  const jenis = document.getElementById('jenisAnggunan').value;
+  document.getElementById('boxBPKB').classList.remove('show');
+  document.getElementById('boxSHM').classList.remove('show');
+  if(jenis==='BPKB') document.getElementById('boxBPKB').classList.add('show');
+  if(jenis==='SHM') document.getElementById('boxSHM').classList.add('show');
+}
+
+function simpanNasabah(){
+  const plapon = parseInt(document.getElementById('plapon').value);
+  const tenor = parseInt(document.getElementById('tenor').value);
+  if(!document.getElementById('norek').value ||!document.getElementById('nama').value ||!plapon ||!tenor){
+    alert('❌ Isi data wajib yg ada tanda *'); return;
+  }
+  const h = hitungBunga(plapon, tenor);
+  const tglCair = document.getElementById('tglCair').value;
+  const tglJatuh = new Date(tglCair);
+  tglJatuh.setDate(tglJatuh.getDate() + (tenor * 7));
+
+  const nasabah = {
+    id: editId || Date.now(),
+    norek: document.getElementById('norek').value,
+    nama: document.getElementById('nama').value,
+    ktp: document.getElementById('ktp').value,
+    hp: document.getElementById('hp').value,
+    alamat: document.getElementById('alamat').value,
+    namaPasangan: document.getElementById('namaPasangan').value,
+    hpPasangan: document.getElementById('hpPasangan').value,
+    pl: document.getElementById('namaPL').value,
+    plapon: plapon,
+    tenor: tenor,
+    bunga: h.bunga,
+    total: h.total,
+    angsuran: h.angsuran,
+    tglCair: tglCair,
+    tglJatuh: tglJatuh.toISOString().split('T')[0],
+    pinjamanKe: parseInt(document.getElementById('pinjamanKe').value),
+    statusPinjaman: document.getElementById('statusPinjaman').value,
+    jenisAnggunan: document.getElementById('jenisAnggunan').value,
+    noBPKB: document.getElementById('noBPKB').value,
+    namaBPKB: document.getElementById('namaBPKB').value,
+    nopol: document.getElementById('nopol').value,
+    merkMotor: document.getElementById('merkMotor').value,
+    tahunMotor: document.getElementById('tahunMotor').value,
+    noSHM: document.getElementById('noSHM').value,
+    namaSHM: document.getElementById('namaSHM').value,
+    luasTanah: document.getElementById('luasTanah').value,
+    alamatTanah: document.getElementById('alamatTanah').value,
+    sisa: h.total,
+    setor: 0,
+    lunas: false,
+    colekKe: 0,
+    tglColek: '',
+    catatanColek: '',
+    mingguKe: 0,
+    mingguTelat: 0
+  };
+
+  if(editId){
+    const idx = data.findIndex(n=>n.id===editId);
+    data[idx] = nasabah;
+    alert('✅ Data nasabah berhasil diupdate!');
+  } else {
+    data.push(nasabah);
+    alert('✅ Data nasabah berhasil disimpan!');
+  }
+
+  localStorage.setItem('koperasi_nasabah_v2', JSON.stringify(data));
+  resetForm();
+  renderAll();
+  showPage('nasabah');
+}
+
+function resetForm(){
+  document.getElementById('norek').value='';
+  document.getElementById('nama').value='';
+  document.getElementById('ktp').value='';
+  document.getElementById('hp').value='';
+  document.getElementById('alamat').value='';
+  document.getElementById('namaPasangan').value='';
+  document.getElementById('hpPasangan').value='';
+  document.getElementById('setoranPokok').value='50000';
+  document.getElementById('plapon').value='500000';
+  document.getElementById('tenor').value='12';
+  document.getElementById('pinjamanKe').value='1';
+  document.getElementById('jenisAnggunan').value='';
+  toggleJaminan();
+  editId = null;
+  document.getElementById('formJudul').textContent = '➕ Data Nasabah Baru';
+  document.getElementById('btnBatal').style.display='none';
+  hitungTotal();
+}
+
+function editNasabah(id){
+  const n = data.find(x=>x.id===id);
+  if(!n) return;
+  editId = id;
+  document.getElementById('norek').value = n.norek;
+  document.getElementById('nama').value = n.nama;
+  document.getElementById('ktp').value = n.ktp;
+  document.getElementById('hp').value = n.hp;
+  document.getElementById('alamat').value = n.alamat;
+  document.getElementById('namaPasangan').value = n.namaPasangan || '';
+  document.getElementById('hpPasangan').value = n.hpPasangan || '';
+  document.getElementById('namaPL').value = n.pl;
+  document.getElementById('setoranPokok').value = n.setoranPokok || 50000;
+  document.getElementById('plapon').value = n.plapon;
+  document.getElementById('tenor').value = n.tenor;
+  document.getElementById('tglCair').value = n.tglCair;
+  document.getElementById('pinjamanKe').value = n.pinjamanKe;
+  document.getElementById('statusPinjaman').value = n.statusPinjaman;
+  document.getElementById('jenisAnggunan').value = n.jenisAnggunan;
+  toggleJaminan();
+  if(n.jenisAnggunan==='BPKB'){
+    document.getElementById('noBPKB').value = n.noBPKB;
+    document.getElementById('namaBPKB').value = n.namaBPKB;
+    document.getElementById('nopol').value = n.nopol;
+    document.getElementById('merkMotor').value = n.merkMotor;
+    document.getElementById('tahunMotor').value = n.tahunMotor;
+  }
+  if(n.jenisAnggunan==='SHM'){
+    document.getElementById('noSHM').value = n.noSHM;
+    document.getElementById('namaSHM').value = n.namaSHM;
+    document.getElementById('luasTanah').value = n.luasTanah;
+    document.getElementById('alamatTanah').value = n.alamatTanah;
+  }
+  document.getElementById('formJudul').textContent = '✏️ Edit Data Nasabah';
+  document.getElementById('btnBatal').style.display='block';
+  hitungTotal();
+  showPage('tambah');
+}
+
+function batalEdit(){ resetForm(); }
+
+function hapusNasabah(id){
+  if(confirm('Yakin hapus nasabah ini? Data angsuran juga akan hilang!')){
+    data = data.filter(n=>n.id!==id);
+    transaksi = transaksi.filter(t=>t.idNasabah!==id);
+    localStorage.setItem('koperasi_nasabah_v2', JSON.stringify(data));
+    localStorage.setItem('koperasi_transaksi', JSON.stringify(transaksi));
+    renderAll();
+    alert('✅ Data berhasil dihapus');
+  }
+}
+
+function openSetor(id){
+  const n = data.find(x=>x.id===id);
+  if(!n) return;
+  setoranId = id;
+  const sisaMinggu = n.tenor - n.mingguKe;
+  document.getElementById('modalInfo').innerHTML = `
+    <div class="detail-box">
+      <div class="detail-row"><span>Nama:</span><span><b>${n.nama}</b></span></div>
+      <div class="detail-row"><span>No. Rek:</span><span>${n.norek}</span></div>
+      <div class="detail-row"><span>Sisa Pelunasan:</span><span><b>Rp ${n.sisa.toLocaleString('id-ID')}</b></span></div>
+      <div class="detail-row"><span>Angsuran/Minggu:</span><span>Rp ${n.angsuran.toLocaleString('id-ID')}</span></div>
+      <div class="detail-row"><span>Minggu Ke:</span><span>${n.mingguKe} dari ${n.tenor}</span></div>
+      <div class="detail-row"><span>Sisa Minggu:</span><span>${sisaMinggu} minggu</span></div>
+    </div>
+  `;
+  document.getElementById('jumlahSetor').value = n.angsuran;
+  document.getElementById('modalSetor').classList.add('show');
+}
+
+function prosesSetor(){
+  const jumlah = parseInt(document.getElementById('jumlahSetor').value);
+  const tgl = document.getElementById('tglSetor').value;
+  const pl = document.getElementById('plNagih').value;
+  if(!jumlah ||!tgl ||!pl){ alert('❌ Lengkapi semua data!'); return; }
+
+  const n = data.find(x=>x.id===setoranId);
+  if(!n) return;
+
+  const porsiJasa = Math.round(n.bunga / n.tenor);
+  const porsiPokok = n.angsuran - porsiJasa;
+  const pokokBayar = Math.round((porsiPokok / n.angsuran) * jumlah);
+  const jasaBayar = jumlah - pokokBayar;
+
+  n.sisa -= jumlah;
+  n.setor += jumlah;
+  n.mingguKe += 1;
+  if(n.sisa <= 0){ n.lunas = true; n.sisa = 0; }
+
+  transaksi.push({
+    id: Date.now(),
+    idNasabah: setoranId,
+    tanggal: tgl,
+    jumlah: jumlah,
+    pokok: pokokBayar,
+    jasa: jasaBayar,
+    pl: pl,
+    mingguKe: n.mingguKe
+  });
+
+  localStorage.setItem('koperasi_nasabah_v2', JSON.stringify(data));
+  localStorage.setItem('koperasi_transaksi', JSON.stringify(transaksi));
+  closeModal('modalSetor');
+  renderAll();
+  alert('✅ Setoran berhasil! Pokok: Rp '+pokokBayar.toLocaleString('id-ID')+', Jasa: Rp '+jasaBayar.toLocaleString('id-ID'));
+}
+
+function openColek(id){
+  const n = data.find(x=>x.id===id);
+  if(!n) return;
+  colekId = id;
+  document.getElementById('colekInfo').innerHTML = `
+    <div class="detail-box">
+      <div class="detail-row"><span>Nama:</span><span><b>${n.nama}</b></span></div>
+      <div class="detail-row"><span>No. Rek:</span><span>${n.norek}</span></div>
+      <div class="detail-row"><span>Telat:</span><span class="keluar"><b>${n.mingguTelat} Minggu</b></span></div>
+      <div class="detail-row"><span>Colek Terakhir:</span><span>${n.colekKe? 'Ke-'+n.colekKe : 'Belum pernah'}</span></div>
+    </div>
+  `;
+  document.getElementById('modalColek').classList.add('show');
+}
+
+function simpanColek(){
+  const n = data.find(x=>x.id===colekId);
+  if(!n) return;
+  n.colekKe = parseInt(document.getElementById('colekKe').value);
+  n.tglColek = document.getElementById('tglColek').value;
+  n.catatanColek = document.getElementById('catatanColek').value;
+  localStorage.setItem('koperasi_nasabah_v2', JSON.stringify(data));
+  closeModal('modalColek');
+  renderAll();
+  alert('✅ Update colek berhasil!');
+}
+
+function showModalInput(){ document.getElementById('modalInputModal').classList.add('show'); }
+function simpanModal(){
+  const tgl = document.getElementById('modalTgl').value;
+  const nama = document.getElementById('modalNama').value;
+  const kat = document.getElementById('modalKat').value;
+  const jumlah = parseInt(document.getElementById('modalJumlah').value);
+  const ket = document.getElementById('modalKet').value;
+  if(!tgl ||!nama ||!jumlah){ alert('❌ Lengkapi data!'); return; }
+  modalData.push({id:Date.now(), tanggal:tgl, nama:nama, kategori:kat, jumlah:jumlah, keterangan:ket});
+  localStorage.setItem('koperasi_modal', JSON.stringify(modalData));
+  closeModal('modalInputModal');
+  renderModal();
+  renderDashboard();
+  document.getElementById('modalNama').value='';
+  document.getElementById('modalJumlah').value='';
+  document.getElementById('modalKet').value='';
+}
+
+function showKasInput(){ document.getElementById('modalInputKas').classList.add('show'); }
+function simpanKas(){
+  const tgl = document.getElementById('kasTgl').value;
+  const kat = document.getElementById('kasKat').value;
+  const ket = document.getElementById('kasKet').value;
+  const jumlah = parseInt(document.getElementById('kasJumlah').value);
+  const jenis = document.getElementById('kasJenis').value;
+  if(!tgl ||!kat ||!ket ||!jumlah){ alert('❌ Lengkapi data!'); return; }
+  kasData.push({id:Date.now(), tanggal:tgl, kategori:kat, keterangan:ket, jumlah:jumlah, jenis:jenis});
+  localStorage.setItem('koperasi_kas', JSON.stringify(kasData));
+  closeModal('modalInputKas');
+  renderKas();
+  renderDashboard();
+  document.getElementById('kasKet').value='';
+  document.getElementById('kasJumlah').value='';
+}
+
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+
+function renderAll(){
+  updateMingguTelat();
+  renderDashboard();
+  renderNasabah();
+  renderTelat();
+  renderModal();
+  renderKas();
+}
+
+function updateMingguTelat(){
+  const today = new Date();
+  data.forEach(n=>{
+    if(n.lunas) return;
+    const tglJatuh = new Date(n.tglJatuh);
+    const selisihHari = Math.floor((today - tglJatuh) / (1000*60*60*24));
+    n.mingguTelat = selisihHari > 0? Math.ceil(selisihHari / 7) : 0;
+  });
+  localStorage.setItem('koperasi_nasabah_v2', JSON.stringify(data));
+}
+
+function renderDashboard(){
+  const today = new Date().toISOString().split('T')[0];
+  const bulanIni = today.substring(0,7);
+
+  const masukHariIni = transaksi.filter(t=>t.tanggal===today).reduce((a,t)=>a+t.jumlah,0);
+  document.getElementById('uangMasukHariIni').textContent = 'Rp ' + masukHariIni.toLocaleString('id-ID');
+
+  const jasaBulanIni = transaksi.filter(t=>t.tanggal.startsWith(bulanIni)).reduce((a,t)=>a+t.jasa,0);
+  const dendaBulanIni = kasData.filter(k=>k.tanggal.startsWith(bulanIni)&&k.kategori==='Pendapatan Lain').reduce((a,k)=>a+k.jumlah,0);
+  const biayaBulanIni = kasData.filter(k=>k.tanggal.startsWith(bulanIni)&&k.jenis==='keluar').reduce((a,k)=>a+k.jumlah,0);
+  const labaBersih = jasaBulanIni + dendaBulanIni - biayaBulanIni;
+  document.getElementById('labaBersihBulan').textContent = 'Rp ' + labaBersih.toLocaleString('id-ID');
+
+  const totalModalMasuk = modalData.filter(m=>m.kategori!=='Tarik Modal').reduce((a,m)=>a+m.jumlah,0);
+  const totalModalKeluar = modalData.filter(m=>m.kategori==='Tarik Modal').reduce((a,m)=>a+m.jumlah,0);
+  const totalSetoranPokok = data.reduce((a,n)=>a+(n.setoranPokok||0),0);
+const totalPokokKembali = transaksi.reduce((a,t)=>a+t.pokok,0);
+const modalBersih = totalModalMasuk - totalModalKeluar + totalSetoranPokok + totalPokokKembali;
+const totalPinjamanJalan = data.filter(n=>!n.lunas).reduce((a,n)=>a+n.plapon,0);
+const totalBiaya = kasData.filter(k=>k.jenis==='keluar').reduce((a,k)=>a+k.jumlah,0);
+const kasTangan = modalBersih - totalPinjamanJalan - totalBiaya;
+document.getElementById('sisaModal').textContent = 'Rp ' + kasTangan.toLocaleString('id-ID');
+document.getElementById('totalCair').textContent = 'Rp ' + totalPinjamanJalan.toLocaleString('id-ID');
+  const telat90 = data.filter(n=>n.mingguTelat>=13&&!n.lunas).length;
+  const totalNasabah = data.length;
+  const npl = totalNasabah>0? ((telat90/totalNasabah)*100).toFixed(1) : 0;
+  document.getElementById('nplPersen').textContent = npl + '%';
+  const totalTelat = data.filter(n=>n.mingguTelat>0&&!n.lunas).length;
+  document.getElementById('totalTelat').textContent = totalTelat;
+  document.getElementById('notifTelat').textContent = totalTelat;
+  document.getElementById('notifTelat').style.display = totalTelat>0? 'inline-block' : 'none';
+
+  const totalJasa = transaksi.reduce((a,t)=>a+t.jasa,0);
+  const totalDenda = kasData.filter(k=>k.kategori==='Pendapatan Lain').reduce((a,k)=>a+k.jumlah,0);
+  document.getElementById('laporanBunga').innerHTML = '<b>Rp ' + totalJasa.toLocaleString('id-ID') + '</b>';
+  document.getElementById('laporanDenda').innerHTML = '<b>Rp ' + totalDenda.toLocaleString('id-ID') + '</b>';
+  document.getElementById('laporanLain').innerHTML = '<b>Rp 0</b>';
+  document.getElementById('laporanBiaya').innerHTML = '<b>Rp ' + totalBiaya.toLocaleString('id-ID') + '</b>';
+  document.getElementById('laporanLaba').innerHTML = '<b>Rp ' + (totalJasa+totalDenda-totalBiaya).toLocaleString('id-ID') + '</b>';
+
+  const plList = ['Lalu Imron Gozali','Hifzan Hadi','Lalu Danu Rusamsi','Alfan Taruna Anugraha'];
+  let htmlPL = '';
+  plList.forEach(pl=>{
+    const nasabahPL = data.filter(n=>n.pl===pl&&!n.lunas);
+    const telatPL = nasabahPL.filter(n=>n.mingguTelat>0).length;
+    const totalSetor = transaksi.filter(t=>t.pl===pl).reduce((a,t)=>a+t.jumlah,0);
+    htmlPL += `<div class="detail-row"><span>${pl}:</span><span>${nasabahPL.length} nasabah, ${telatPL} telat, Rp ${totalSetor.toLocaleString('id-ID')}</span></div>`;
+  });
+  document.getElementById('kinerjaPL').innerHTML = htmlPL || '<div class="empty">Belum ada data</div>';
+}
+
+function renderNeraca(){
+  const totalModalMasuk = modalData.filter(m=>m.kategori!=='Tarik Modal').reduce((a,m)=>a+m.jumlah,0);
+  const totalModalKeluar = modalData.filter(m=>m.kategori==='Tarik Modal').reduce((a,m)=>a+m.jumlah,0);
+  const totalSetoranPokok = data.reduce((a,n)=>a+(n.setoranPokok||0),0);
+  const modalBersih = totalModalMasuk - totalModalKeluar + totalSetoranPokok;
+  const piutang = data.filter(n=>!n.lunas).reduce((a,n)=>a+n.sisa,0);
+  const totalBiaya = kasData.filter(k=>k.jenis==='keluar').reduce((a,k)=>a+k.jumlah,0);
+  const kasTangan = modalBersih - data.filter(n=>!n.lunas).reduce((a,n)=>a+n.plapon,0) - totalBiaya;
+  const totalJasa = transaksi.reduce((a,t)=>a+t.jasa,0);
+  const labaDitahan = totalJasa - totalBiaya;
+  const totalAset = kasTangan + piutang;
+  const totalKewajibanModal = modalBersih + labaDitahan;
+
+  document.getElementById('isiNeraca').innerHTML = `
+    <div class="detail-row"><span><b>ASET</b></span><span></span></div>
+    <div class="detail-row"><span>Kas di Tangan:</span><span>Rp ${kasTangan.toLocaleString('id-ID')}</span></div>
+    <div class="detail-row"><span>Piutang Pinjaman:</span><span>Rp ${piutang.toLocaleString('id-ID')}</span></div>
+    <hr style="margin:8px 0;border:none;border-top:1px solid #e2e8f0">
+    <div class="detail-row"><span><b>TOTAL ASET:</b></span><span><b>Rp ${totalAset.toLocaleString('id-ID')}</b></span></div>
+    <br>
+    <div class="detail-row"><span><b>KEWAJIBAN & MODAL</b></span><span></span></div>
+    <div class="detail-row"><span>Modal Disetor:</span><span>Rp ${modalBersih.toLocaleString('id-ID')}</span></div>
+    <div class="detail-row"><span>Laba Ditahan:</span><span>Rp ${labaDitahan.toLocaleString('id-ID')}</span></div>
+    <hr style="margin:8px 0;border:none;border-top:1px solid #e2e8f0">
+    <div class="detail-row"><span><b>TOTAL KEWAJIBAN+MODAL:</b></span><span><b>Rp ${totalKewajibanModal.toLocaleString('id-ID')}</b></span></div>
+    <br>
+    <div class="detail-row"><span><b>SELISIH:</b></span><span class="${Math.abs(totalAset-totalKewajibanModal)<2?'masuk':'keluar'}"><b>Rp ${Math.abs(totalAset-totalKewajibanModal).toLocaleString('id-ID')}</b></span></div>
+  `;
+}
+
+function renderLabaRugi(){
+  const totalJasa = transaksi.reduce((a,t)=>a+t.jasa,0);
+  const totalDenda = kasData.filter(k=>k.kategori==='Pendapatan Lain').reduce((a,k)=>a+k.jumlah,0);
+  const totalBiaya = kasData.filter(k=>k.jenis==='keluar').reduce((a,k)=>a+k.jumlah,0);
+  const laba = totalJasa + totalDenda - totalBiaya;
+
+  document.getElementById('isiLabaRugi').innerHTML = `
+    <div class="detail-row"><span><b>PENDAPATAN</b></span><span></span></div>
+    <div class="detail-row"><span>Pendapatan Bunga/Jasa:</span><span class="masuk">Rp ${totalJasa.toLocaleString('id-ID')}</span></div>
+    <div class="detail-row"><span>Pendapatan Denda:</span><span class="masuk">Rp ${totalDenda.toLocaleString('id-ID')}</span></div>
+    <hr style="margin:8px 0;border:none;border-top:1px solid #e2e8f0">
+    <div class="detail-row"><span><b>TOTAL PENDAPATAN:</b></span><span class="masuk"><b>Rp ${(totalJasa+totalDenda).toLocaleString('id-ID')}</b></span></div>
+    <br>
+    <div class="detail-row"><span><b>BEBAN</b></span><span></span></div>
+    <div class="detail-row"><span>Total Biaya Operasional:</span><span class="keluar">Rp ${totalBiaya.toLocaleString('id-ID')}</span></div>
+    <hr style="margin:8px 0;border:none;border-top:2px solid #e2e8f0">
+    <div class="detail-row"><span><b>LABA BERSIH:</b></span><span class="masuk"><b>Rp ${laba.toLocaleString('id-ID')}</b></span></div>
+  `;
+}
+
+function renderLaporanPL(){
+  const plList = ['Lalu Imron Gozali','Hifzan Hadi','Lalu Danu Rusamsi','Alfan Taruna Anugraha'];
+  let html = '';
+  plList.forEach(pl=>{
+    const nasabahPL = data.filter(n=>n.pl===pl);
+    const aktif = nasabahPL.filter(n=>!n.lunas).length;
+    const lunas = nasabahPL.filter(n=>n.lunas).length;
+    const telat = nasabahPL.filter(n=>n.mingguTelat>0&&!n.lunas).length;
+    const totalCair = nasabahPL.reduce((a,n)=>a+n.plapon,0);
+    const totalSetor = transaksi.filter(t=>t.pl===pl).reduce((a,t)=>a+t.jumlah,0);
+    html += `
+      <div class="detail-box">
+        <div class="detail-row"><span><b>${pl}</b></span><span></span></div>
+        <div class="detail-row"><span>Total Nasabah:</span><span>${nasabahPL.length} (${aktif} aktif, ${lunas} lunas)</span></div>
+        <div class="detail-row"><span>Nasabah Telat:</span><span class="keluar">${telat}</span></div>
+        <div class="detail-row"><span>Total Pinjaman Dicairkan:</span><span>Rp ${totalCair.toLocaleString('id-ID')}</span></div>
+        <div class="detail-row"><span>Total Setoran Ditarik:</span><span class="masuk">Rp ${totalSetor.toLocaleString('id-ID')}</span></div>
+      </div>
+    `;
+  });
+  document.getElementById('isiLaporanPL').innerHTML = html;
+}
+
+function renderJatuhTempo(){
+  const today = new Date().toISOString().split('T')[0];
+  const jatuhTempo = data.filter(n=>{
+    if(n.lunas) return false;
+    const tglAngsuran = new Date(n.tglCair);
+    tglAngsuran.setDate(tglAngsuran.getDate() + (n.mingguKe * 7));
+    return tglAngsuran.toISOString().split('T')[0] === today;
+  });
+
+  if(jatuhTempo.length===0){
+    document.getElementById('isiJatuhTempo').innerHTML = '<div class="empty">Tidak ada nasabah jatuh tempo hari ini 🎉</div>';
+    return;
+  }
+
+  let html = '';
+  jatuhTempo.forEach(n=>{
+    html += `
+      <div class="nasabah-item">
+        <div class="nasabah-nama">${n.nama} <span class="badge badge-aktif">Jatuh Tempo</span></div>
+        <div class="nasabah-info">No.Rek: ${n.norek} | PL: ${n.pl}<br>Angsuran: Rp ${n.angsuran.toLocaleString('id-ID')} | Sisa: Rp ${n.sisa.toLocaleString('id-ID')}</div>
+        <div class="action-row">
+          <button class="btn btn-small" onclick="openSetor(${n.id})">Setor</button>
+          <button class="btn btn-purple btn-small" onclick="openColek(${n.id})">Colek</button>
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('isiJatuhTempo').innerHTML = html;
+}
+
+function renderNasabah(){
+  const search = document.getElementById('searchNama').value.toLowerCase();
+  const filtered = data.filter(n=>
+    n.nama.toLowerCase().includes(search) ||
+    n.norek.includes(search) ||
+    n.ktp.includes(search) ||
+    n.pl.toLowerCase().includes(search)
+  );
+
+  if(filtered.length===0){
+    document.getElementById('listNasabah').innerHTML = '<div class="empty">Tidak ada data nasabah</div>';
+    return;
+  }
+
+  let html = '';
+    filtered.forEach(n=>{
+  // HITUNG SETORAN DARI TRANSAKSI
+  const semuaTransaksi = JSON.parse(localStorage.getItem('koperasi_transaksi') || '[]');
+  const setoranNasabah = semuaTransaksi.filter(t => t.idNasabah === n.id);
+  const totalSetor = setoranNasabah.reduce((sum, t) => sum + t.jumlah, 0);
+  const kaliSetor = setoranNasabah.length;
+  const sisaTagihan = n.total - totalSetor;
+  const statusBadge = n.lunas? '<span class="badge badge-lunas">LUNAS</span>' : 
+    n.mingguTelat>0? `<span class="badge badge-telat">TELAT ${n.mingguTelat} MINGGU</span>` :
+    '<span class="badge badge-aktif">AKTIF</span>';
+    const colekBadge = n.colekKe>0? `<span class="badge badge-colek">COLEK ${n.colekKe}</span>` : '';
+    const btnTeguran = n.mingguTelat>=3? `<button class="btn btn-red btn-small" onclick="cetakTeguran(${n.id})">Teguran</button>` : '';
+    const btnWA = `<a href="https://wa.me/62${n.hp.replace(/^0/,'')}" target="_blank" class="btn btn-blue btn-small">WA</a>`;
+
+    html += `
+      <div class="nasabah-item ${n.mingguTelat>0?'telat':''}">
+        <div class="nasabah-head">
+          <div class="nasabah-nama">${n.nama} ${statusBadge} ${colekBadge}</div>
+          <div class="nasabah-info">
+            No.Rek: ${n.norek} | KTP: ${n.ktp} | HP: ${n.hp}<br>
+            PL: ${n.pl} | Pinjaman Ke-${n.pinjamanKe} | Status: ${n.statusPinjaman}<br>
+            Alamat: ${n.alamat}
+          </div>
+        <div class="detail-box">
+          <div class="detail-row"><span>Plapon:</span><span>Rp ${n.plapon.toLocaleString('id-ID')}</span></div>
+          <div class="detail-row"><span>Tenor:</span><span>${n.tenor} minggu</span></div>
+          <div class="detail-row"><span>Angsuran/Minggu:</span><span>Rp ${n.angsuran.toLocaleString('id-ID')}</span></div>
+          <div class="detail-row"><span>Total Pelunasan:</span><span>Rp ${n.total.toLocaleString('id-ID')}</span></div>
+          <div class="detail-row"><span>Sudah Setor:</span><span style="color:green">Rp ${totalSetor.toLocaleString('id-ID')} (${kaliSetor}/${n.tenor})</span></div>
+          <div class="detail-row"><span>Tgl Cair:</span><span>${n.tglCair}</span></div>
+          <div class="detail-row"><span>Jatuh Tempo:</span><span>${n.tglJatuh}</span></div>
+          ${n.jenisAnggunan? `<div class="detail-row"><span>Anggunan:</span><span>${n.jenisAnggunan} - ${n.jenisAnggunan==='BPKB'? n.nopol : n.noSHM}</span></div>` : ''}
+          ${n.colekKe>0? `<div class="detail-row"><span>Catatan Colek:</span><span>${n.catatanColek||'-'}</span></div>` : ''}
+        </div>
+        <div class="action-row">
+          ${!n.lunas? `<button class="btn btn-small" onclick="openSetor(${n.id})">Setor</button>` : ''}
+          <button class="btn btn-yellow btn-small" onclick="cetakKwitansi(${n.id})">Kwitansi</button>
+          <button class="btn btn-purple btn-small" onclick="openColek(${n.id})">Colek</button>
+          ${btnTeguran}
+          ${btnWA}
+          <button class="btn btn-orange btn-small" onclick="editNasabah(${n.id})">Edit</button>
+          <button class="btn btn-red btn-small" onclick="hapusNasabah(${n.id})">Hapus</button>
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('listNasabah').innerHTML = html;
+}
+
+function renderTelat(){
+  const search = document.getElementById('searchTelat').value.toLowerCase();
+  const telat = data.filter(n=>n.mingguTelat>0&&!n.lunas&&(search===''||n.pl.toLowerCase().includes(search)));
+
+  if(telat.length===0){
+    document.getElementById('listTelat').innerHTML = '<div class="empty">Alhamdulillah tidak ada yg telat 🎉</div>';
+    return;
+  }
+
+  let html = '';
+  telat.forEach(n=>{
+    const colekBadge = n.colekKe>0? `<span class="badge badge-colek">COLEK ${n.colekKe}</span>` : '';
+    const btnTeguran = n.mingguTelat>=3? `<button class="btn btn-red btn-small" onclick="cetakTeguran(${n.id})">Surat Teguran</button>` : '';
+    html += `
+      <div class="nasabah-item telat">
+        <div class="nasabah-nama">${n.nama} <span class="badge badge-telat">TELAT ${n.mingguTelat} MINGGU</span> ${colekBadge}</div>
+        <div class="nasabah-info">
+          No.Rek: ${n.norek} | PL: ${n.pl} | HP: ${n.hp}<br>
+          Sisa: Rp ${n.sisa.toLocaleString('id-ID')} | Angsuran: Rp ${n.angsuran.toLocaleString('id-ID')}<br>
+          ${n.catatanColek? 'Catatan: '+n.catatanColek : ''}
+        </div>
+        <div class="action-row">
+          <button class="btn btn-small" onclick="openSetor(${n.id})">Setor</button>
+          <button class="btn btn-purple btn-small" onclick="openColek(${n.id})">Colek</button>
+          ${btnTeguran}
+          <a href="https://wa.me/62${n.hp.replace(/^0/,'')}" target="_blank" class="btn btn-blue btn-small">WA</a>
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('listTelat').innerHTML = html;
+}
+
+function renderModal(){
+  const tbody = document.querySelector('#tabelModal tbody');
+  if(modalData.length===0){
+    tbody.innerHTML = '<tr><td colspan="5" class="empty">Belum ada data modal</td></tr>';
+    return;
+  }
+  let html = '';
+  modalData.forEach((m,i)=>{
+    html += `
+      <tr>
+        <td>${m.tanggal}</td>
+        <td>${m.nama}</td>
+        <td>${m.kategori}</td>
+        <td class="${m.kategori==='Tarik Modal'?'keluar':'masuk'}">Rp ${m.jumlah.toLocaleString('id-ID')}</td>
+        <td><button class="btn btn-red btn-small" onclick="hapusModal(${i})">Hapus</button></td>
+      </tr>
+    `;
+  });
+  tbody.innerHTML = html;
+}
+
+function hapusModal(idx){
+  if(confirm('Hapus data modal ini?')){
+    modalData.splice(idx,1);
+    localStorage.setItem('koperasi_modal', JSON.stringify(modalData));
+    renderModal();
+    renderDashboard();
+  }
+}
+
+function renderKas(){
+  const tbody = document.querySelector('#tabelKas tbody');
+  if(kasData.length===0){
+    tbody.innerHTML = '<tr><td colspan="6" class="empty">Belum ada transaksi kas</td></tr>';
+    return;
+  }
+  let html = '';
+  kasData.forEach((k,i)=>{
+    html += `
+      <tr>
+        <td>${k.tanggal}</td>
+        <td>${k.kategori}</td>
+        <td>${k.keterangan}</td>
+        <td class="masuk">${k.jenis==='masuk'?'Rp '+k.jumlah.toLocaleString('id-ID'):'-'}</td>
+        <td class="keluar">${k.jenis==='keluar'?'Rp '+k.jumlah.toLocaleString('id-ID'):'-'}</td>
+        <td><button class="btn btn-red btn-small" onclick="hapusKas(${i})">Hapus</button></td>
+      </tr>
+    `;
+  });
+  tbody.innerHTML = html;
+}
+
+function hapusKas(idx){
+  if(confirm('Hapus transaksi kas ini?')){
+    kasData.splice(idx,1);
+    localStorage.setItem('koperasi_kas', JSON.stringify(kasData));
+    renderKas();
+    renderDashboard();
+  }
+}
+
+function exportExcel(){
+  let csv = 'No Rekening,Nama,KTP,HP,Alamat,PL,Setoran Pokok,Plapon,Tenor,Bunga,Total,Angsuran,Sisa,Setor,Minggu Ke,Telat,Minggu Telat,Status,Lunas,Colek Ke,Tgl Colek,Catatan Colek\n';
+  data.forEach(n=>{
+    csv += `"${n.norek}","${n.nama}","${n.ktp}","${n.hp}","${n.alamat}","${n.pl}",${n.setoranPokok||0},${n.plapon},${n.tenor},${n.bunga},${n.total},${n.angsuran},${n.sisa},${n.setor},${n.mingguKe},${n.mingguTelat>0?'Ya':'Tidak'},${n.mingguTelat},"${n.statusPinjaman}",${n.lunas?'Lunas':'Aktif'},${n.colekKe},"${n.tglColek}","${n.catatanColek}"\n`;
+  });
+  downloadFile(csv, 'Laporan_Nasabah_K4S.csv', 'text/csv');
+}
+
+function salinData(){
+  let teks = 'No.Rek\tNama\tSetoran Pokok\tPlapon\tSisa\tSetor\tMinggu\tTelat\tStatus\n';
+  data.forEach(n=>{
+    teks += `${n.norek}\t${n.nama}\t${n.setoranPokok||0}\t${n.plapon}\t${n.sisa}\t${n.setor}\t${n.mingguKe}/${n.tenor}\t${n.mingguTelat}\t${n.lunas?'Lunas':'Aktif'}\n`;
+  });
+  navigator.clipboard.writeText(teks).then(()=>alert('✅ Data berhasil disalin! Tinggal paste di Excel'));
+}
+
+function backupData(){
+  const backup = {
+    nasabah: data,
+    transaksi: transaksi,
+    modal: modalData,
+    kas: kasData,
+    tanggal: new Date().toISOString()
+  };
+  downloadFile(JSON.stringify(backup, null, 2), 'Backup_K4S_'+new Date().toISOString().split('T')[0]+'.json', 'application/json');
+}
+
+function downloadFile(content, filename, type){
+  const blob = new Blob([content], {type: type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function cetakKwitansi(id){
+  const n = data.find(x=>x.id===id);
+  if(!n) return;
+  const tgl = new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('isiKwitansi').innerHTML = `
+    <div class="kop">
+      <h2>KWITANSI SETORAN POKOK</h2>
+      <p>KOPERASI SYARIAH EMPAT SEKAWAN<br>Jln. Pariwisata Otak Kokok, Desa Pesanggrahan</p>
+    </div>
+    <div class="isi">
+      <table style="width:100%;border:none">
+        <tr><td width="35%">No. Anggota</td><td>: ${n.norek}</td></tr>
+        <tr><td>Nama Anggota</td><td>: <b>${n.nama}</b></td></tr>
+        <tr><td>Alamat</td><td>: ${n.alamat}</td></tr>
+        <tr><td>Tanggal Setor</td><td>: ${tgl}</td></tr>
+        <tr><td>Jumlah Setoran</td><td>: <b>Rp ${(n.setoranPokok||0).toLocaleString('id-ID')}</b></td></tr>
+        <tr><td>Terbilang</td><td>: ${terbilang(n.setoranPokok||0)} Rupiah</td></tr>
+      </table>
+    </div>
+    <div class="ttd">
+      <div>Penyetor,<br><br><br><b>(${n.nama})</b></div>
+      <div>Bendahara,<br><br><br><b>(___________)</b></div>
+    </div>
+  `;
+  document.getElementById('modalKwitansi').classList.add('show');
+}
+
+function cetakTeguran(id){
+  const n = data.find(x=>x.id===id);
+  if(!n) return;
+  const tgl = new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
+  const tunggakan = n.mingguTelat * n.angsuran;
+  document.getElementById('isiTeguran').innerHTML = `
+    <div class="kop-surat">
+      <h3>KOPERASI SYARIAH EMPAT SEKAWAN</h3>
+      <p>Badan Hukum: ________________</p>
+      <p>Jln. Pariwisata Otak Kokok, Desa Pesanggrahan, Kec. Montong Gading</p>
+      <p>Telp/WA: 0819-XXXX-XXXX | Email: k4s@koperasi.id</p>
+    </div>
+    <div class="nomor">SURAT TEGURAN KE-${n.colekKe||3}</div>
+    <div class="isi-surat">
+      <p>Kepada Yth,<br>
+      <b>Bapak/Ibu ${n.nama}</b><br>
+      di Tempat</p>
+
+      <p>Dengan hormat,</p>
+
+      <p>Sehubungan dengan kewajiban angsuran pinjaman Saudara di Koperasi Syariah Empat Sekawan dengan data sebagai berikut:</p>
+
+      <table style="margin:10px 0">
+        <tr><td width="150px">No. Rekening</td><td>: ${n.norek}</td></tr>
+        <tr><td>Nama</td><td>: ${n.nama}</td></tr>
+        <tr><td>Alamat</td><td>: ${n.alamat}</td></tr>
+        <tr><td>Plapon Pinjaman</td><td>: Rp ${n.plapon.toLocaleString('id-ID')}</td></tr>
+        <tr><td>Angsuran/Minggu</td><td>: Rp ${n.angsuran.toLocaleString('id-ID')}</td></tr>
+        <tr><td>Tunggakan</td><td>: <b>${n.mingguTelat} Minggu = Rp ${tunggakan.toLocaleString('id-ID')}</b></td></tr>
+      </table>
+
+      <p>Berdasarkan data kami, Saudara telah menunggak pembayaran angsuran selama <b>${n.mingguTelat} ( ${terbilang(n.mingguTelat)} ) minggu</b> dengan total tunggakan sebesar <b>Rp ${tunggakan.toLocaleString('id-ID')} (${terbilang(tunggakan)} Rupiah)</b>.</p>
+
+      <p>Dengan ini kami memberikan <b>TEGURAN KERAS</b> kepada Saudara untuk segera menyelesaikan kewajiban tersebut selambat-lambatnya <b>7 (tujuh) hari</b> sejak surat ini diterima.</p>
+
+      <p>Apabila sampai batas waktu yang ditentukan Saudara tidak melakukan pembayaran, maka kami akan mengambil langkah hukum sesuai dengan perjanjian yang telah ditandatangani dan peraturan perkoperasian yang berlaku.</p>
+
+      <p>Demikian surat teguran ini kami sampaikan. Atas perhatian dan kerjasamanya, kami ucapkan terima kasih.</p>
+    </div>
+    <div class="ttd-surat">
+      Montong Gading, ${tgl}<br>
+      Pengurus K4S,<br><br><br>
+      <b>(_____________________)</b><br>
+      Ketua
+    </div>
+  `;
+  document.getElementById('modalTeguran').classList.add('show');
+}
+
+function terbilang(n){
+  if(n==0) return 'Nol';
+  const angka = ['','Satu','Dua','Tiga','Empat','Lima','Enam','Tujuh','Delapan','Sembilan','Sepuluh','Sebelas'];
+  n = Math.floor(Math.abs(n));
+  if(n<12) return angka[n];
+  if(n<20) return terbilang(n-10)+' Belas';
+  if(n<100) return terbilang(Math.floor(n/10))+' Puluh '+terbilang(n%10);
+  if(n<200) return 'Seratus '+terbilang(n-100);
+  if(n<1000) return terbilang(Math.floor(n/100))+' Ratus '+terbilang(n%100);
+  if(n<2000) return 'Seribu '+terbilang(n-1000);
+  if(n<1000000) return terbilang(Math.floor(n/1000))+' Ribu '+terbilang(n%1000);
+  if(n<1000000000) return terbilang(Math.floor(n/1000000))+' Juta '+terbilang(n%1000000);
+  return terbilang(Math.floor(n/1000000000))+' Miliar '+terbilang(n%1000000000);
+}
+
+renderAll();
+</script>
+</body>
+</html>
